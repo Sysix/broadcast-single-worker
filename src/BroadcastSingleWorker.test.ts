@@ -1,8 +1,21 @@
 import { describe, expect, jest, test } from '@jest/globals';
-
+import crypto from 'node:crypto';
+import { BroadcastChannel } from 'node:worker_threads';
 import BroadcastSingleWorker from './BroadcastSingleWorker';
 
-const sleep = (time = 500) => new Promise((r) => setTimeout(r, time));
+const sleep = (time: number) => new Promise((r) => setTimeout(r, time));
+
+Object.defineProperty(window, 'crypto', {
+    get() {
+        return crypto.webcrypto
+    }
+})
+
+Object.defineProperty(window, 'BroadcastChannel', {
+    get() {
+        return BroadcastChannel
+    }
+})
 
 describe('breadocast single worker', () => {
     test('sending start-worker event when connecting', () => {
@@ -16,6 +29,7 @@ describe('breadocast single worker', () => {
         expect(worker.isMainWorker()).toBe(true);
 
         worker.removeAllListeners();
+        worker.disconnect();
     });
 
     test('send stop-worker event when disconnecting', () => {
@@ -28,11 +42,11 @@ describe('breadocast single worker', () => {
 
         expect(stopCallback).toBeCalledTimes(1);
         expect(worker.isMainWorker()).toBe(false);
-        
+
         worker.removeAllListeners();
     });
 
-    test('stop worker when new worker started', async() => {
+    test('stop worker when new worker started', async () => {
         const worker1 = new BroadcastSingleWorker('worker');
         const worker2 = new BroadcastSingleWorker('worker');
 
@@ -41,13 +55,16 @@ describe('breadocast single worker', () => {
         worker1.connect();
         worker2.connect();
 
-        await sleep(500);
-
         // ToDo: Maybe Mock BroadcastChannel, so we dont need to wait
+        await sleep(10);
+
         expect(stopCallback).toBeCalledTimes(1);
         expect(worker1.isMainWorker()).toBe(false);
         expect(worker2.isMainWorker()).toBe(true);
+
         worker1.removeAllListeners();
+        worker1.disconnect();
+        worker2.disconnect();
     });
 
     test('start worker again when main/last worker is disconnected', async () => {
@@ -59,14 +76,33 @@ describe('breadocast single worker', () => {
         worker1.connect();
         worker2.connect();
         worker2.disconnect();
-        
-        await sleep(500);
 
         // ToDo: Maybe Mock BroadcastChannel, so we dont need to wait
+        await sleep(10);
+
         expect(startCallback).toBeCalledTimes(2);
         expect(worker1.isMainWorker()).toBe(true);
         expect(worker2.isMainWorker()).toBe(false);
 
         worker1.removeAllListeners();
+        worker1.disconnect();
+    });
+
+    test('disconnect channel and worker when window is closing', async () => {
+        const worker = new BroadcastSingleWorker('worker');
+        const stopCallback = jest.fn();
+        
+        worker.addListener('stop-worker', stopCallback);
+        worker.connect();
+
+        window.dispatchEvent(new Event('beforeunload'));
+
+        // ToDo: Maybe Mock BroadcastChannel, so we dont need to wait
+        await sleep(100);
+
+        expect(stopCallback).toBeCalledTimes(1);
+        expect(worker.isMainWorker()).toBe(false);
+
+        worker.removeAllListeners();
     });
 });

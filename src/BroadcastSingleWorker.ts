@@ -1,4 +1,4 @@
-import EventEmitter from 'eventemitter3';
+import { EventEmitter } from 'eventemitter3';
 import { SingleWorkerPayload, SingleWorkerPayloadType } from './SingleWorkerPayload';
 
 export { SingleWorkerPayload, SingleWorkerPayloadType };
@@ -13,14 +13,16 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
 
     #otherWorkerIds: string[] = [];
 
+    #beforeUnloadCallback =  this.disconnect.bind(this);
+
     constructor(channelName: string) {
         super();
 
         this.#channelName = channelName;
-        this.#workerId = globalThis.crypto.randomUUID();
+        this.#workerId = window.crypto.randomUUID();
     }
     /**
-     * connect to the broadcast channel and tell other tabs that we exsists
+     * connect to the broadcast channel and tell other tabs that we exists
      */
     connect(): void {
         // already connected
@@ -28,7 +30,7 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
             return;
         }
 
-        this.#channel = new BroadcastChannel(this.#channelName);
+        this.#channel = new window.BroadcastChannel(this.#channelName);
         this.#channel.onmessage = this.#onMessage.bind(this);
 
         // tell other tabs we are connecting
@@ -39,6 +41,9 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
 
         // tell the outworld to start their job
         this.emit('start-worker');
+
+        // listen for onbeforeunload event
+        window.addEventListener('onbeforeunload', this.#beforeUnloadCallback);
     }
     /**
      * disconnect to the broadcast channel and tell other tabs
@@ -60,9 +65,14 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
             this.emit('stop-worker');
         }
 
+        // close channel
         this.#channel.close();
         this.#channel = undefined;
+
+        // don't listen to the onbeforeunload event
+        window.removeEventListener('onbeforeunload', this.#beforeUnloadCallback);
     }
+
     /**
     * is the current tab the main worker?
     */
@@ -114,7 +124,7 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
         if (event.data.type === SingleWorkerPayloadType.DISCONNECT) {
             this.#removeOtherWorkerId(event.data.workerId);
 
-            // we are toe main worker now, tell the world to start the job
+            // we are the main worker now, tell the world to start the job
             if (this.isMainWorker()) {
                 this.emit('start-worker');
             }
