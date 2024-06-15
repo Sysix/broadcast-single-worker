@@ -122,10 +122,12 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
         // other tab want to disconnect
         // check if we should be now the main worker
         if (event.data.type === SingleWorkerPayloadType.DISCONNECT) {
+            const isCurrentMainWorker = this.isMainWorker();
+
             this.#removeOtherWorkerId(event.data.workerId);
 
             // we are the main worker now, tell the world to start the job
-            if (this.isMainWorker()) {
+            if (!isCurrentMainWorker && this.isMainWorker()) {
                 this.emit('start-worker');
             }
         }

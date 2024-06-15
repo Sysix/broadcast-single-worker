@@ -18,7 +18,7 @@ Object.defineProperty(window, 'BroadcastChannel', {
 })
 
 describe('breadocast single worker', () => {
-    test('sending start-worker event when connecting', () => {
+    test('fire start-worker event when connecting', () => {
         const worker = new BroadcastSingleWorker('worker');
         const startCallback = jest.fn();
 
@@ -32,7 +32,7 @@ describe('breadocast single worker', () => {
         worker.disconnect();
     });
 
-    test('send stop-worker event when disconnecting', () => {
+    test('fire stop-worker event when disconnecting', () => {
         const worker = new BroadcastSingleWorker('worker');
         const stopCallback = jest.fn();
 
@@ -105,4 +105,25 @@ describe('breadocast single worker', () => {
 
         worker.removeAllListeners();
     });
+
+    test('do not fire start-worker event when non main worker disconnect', async () => {
+        const worker1 = new BroadcastSingleWorker('worker');
+        const worker2 = new BroadcastSingleWorker('worker');
+        const startCallback = jest.fn();
+
+        worker2.addListener('start-worker', startCallback);
+        worker1.connect();
+        worker2.connect();
+        worker1.disconnect();
+
+        // ToDo: Maybe Mock BroadcastChannel, so we dont need to wait
+        await sleep(10);
+
+        expect(startCallback).toBeCalledTimes(1);
+        expect(worker1.isMainWorker()).toBe(false);
+        expect(worker2.isMainWorker()).toBe(true);
+
+        worker2.removeAllListeners();
+        worker2.disconnect();
+    })
 });
