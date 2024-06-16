@@ -24,6 +24,9 @@ jobs:
       - name: install package 
         run: npm ci
 
+      - name: build
+        run: npm run build
+
       - name: bump version
         run: |
             git config --global user.name '${{ github.repository_owner }}'
