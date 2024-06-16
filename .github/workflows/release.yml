@@ -28,9 +28,9 @@ jobs:
         run: |
             git config --global user.name '${{ github.repository_owner }}'
             git config --global user.email '${{ github.repository_owner }}@users.noreply.github.com'
-            npm version ${{ github.ref_name }}  --git-tag-version=false
+            npm version ${{ github.ref_name }} --git-tag-version=false
             git commit -am "bump version to ${{ github.ref_name }}"
-            git push
+            git push origin HEAD:${{ github.ref }}
 
       - name: release
         run: npm publish --provenance --access public

@@ -1,6 +1,5 @@
 {
   "name": "@sysix/broadcast-single-worker",
-  "version": "0.2.0",
   "description": "Create a single worker for multiple browser tabs",
   "module": "dist/index.js",
   "browser": "dist/index.js",
