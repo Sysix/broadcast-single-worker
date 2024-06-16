@@ -1,7 +1,7 @@
 import { EventEmitter } from 'eventemitter3';
 import { SingleWorkerPayload, SingleWorkerPayloadType } from './SingleWorkerPayload';
 
-class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker', never> {
+export default class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker', never> {
 
     #channelName: string;
 
@@ -11,7 +11,7 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
 
     #otherWorkerIds: string[] = [];
 
-    #beforeUnloadCallback =  this.disconnect.bind(this);
+    #beforeUnloadCallback = this.disconnect.bind(this);
 
     constructor(channelName: string) {
         super();
@@ -59,7 +59,7 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
         })
 
         // tell the current tab to stop their job
-        if (this.isMainWorker()) {
+        if (this.isActiveWorker()) {
             this.emit('stop-worker');
         }
 
@@ -72,9 +72,9 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
     }
 
     /**
-    * is the current tab the main worker?
+    * is the current tab the currently worker?
     */
-    isMainWorker(): boolean {
+    isActiveWorker(): boolean {
         return this.#channel !== undefined && this.#otherWorkerIds.length === 0;
     }
 
@@ -110,7 +110,7 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
         if (event.data.type === SingleWorkerPayloadType.CONNECT) {
 
             // tell the current tab to stop their job
-            if (this.isMainWorker()) {
+            if (this.isActiveWorker()) {
                 this.emit('stop-worker');
             }
 
@@ -120,16 +120,14 @@ class BroadcastSingleWorker extends EventEmitter<'start-worker' | 'stop-worker',
         // other tab want to disconnect
         // check if we should be now the main worker
         if (event.data.type === SingleWorkerPayloadType.DISCONNECT) {
-            const isCurrentMainWorker = this.isMainWorker();
+            const isCurrentActiveWorker = this.isActiveWorker();
 
             this.#removeOtherWorkerId(event.data.workerId);
 
             // we are the main worker now, tell the current tab to start the job
-            if (!isCurrentMainWorker && this.isMainWorker()) {
+            if (!isCurrentActiveWorker && this.isActiveWorker()) {
                 this.emit('start-worker');
             }
         }
     }
 }
-
-export default BroadcastSingleWorker;

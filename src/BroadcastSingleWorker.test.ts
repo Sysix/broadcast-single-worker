@@ -26,7 +26,7 @@ describe('breadocast single worker', () => {
         worker.connect();
 
         expect(startCallback).toBeCalledTimes(1);
-        expect(worker.isMainWorker()).toBe(true);
+        expect(worker.isActiveWorker()).toBe(true);
 
         worker.removeAllListeners();
         worker.disconnect();
@@ -36,14 +36,14 @@ describe('breadocast single worker', () => {
         const worker = new BroadcastSingleWorker('worker');
         const stopCallback = jest.fn();
 
-        expect(worker.isMainWorker()).toBe(false);
+        expect(worker.isActiveWorker()).toBe(false);
 
         worker.addListener('stop-worker', stopCallback);
         worker.connect();
         worker.disconnect();
 
         expect(stopCallback).toBeCalledTimes(1);
-        expect(worker.isMainWorker()).toBe(false);
+        expect(worker.isActiveWorker()).toBe(false);
 
         worker.removeAllListeners();
     });
@@ -61,8 +61,8 @@ describe('breadocast single worker', () => {
         await sleep(10);
 
         expect(stopCallback).toBeCalledTimes(1);
-        expect(worker1.isMainWorker()).toBe(false);
-        expect(worker2.isMainWorker()).toBe(true);
+        expect(worker1.isActiveWorker()).toBe(false);
+        expect(worker2.isActiveWorker()).toBe(true);
 
         worker1.removeAllListeners();
         worker1.disconnect();
@@ -83,8 +83,8 @@ describe('breadocast single worker', () => {
         await sleep(10);
 
         expect(startCallback).toBeCalledTimes(2);
-        expect(worker1.isMainWorker()).toBe(true);
-        expect(worker2.isMainWorker()).toBe(false);
+        expect(worker1.isActiveWorker()).toBe(true);
+        expect(worker2.isActiveWorker()).toBe(false);
 
         worker1.removeAllListeners();
         worker1.disconnect();
@@ -110,7 +110,7 @@ describe('breadocast single worker', () => {
         await sleep(100);
 
         expect(disconnectMock).toBeCalledTimes(1);
-        expect(worker.isMainWorker()).toBe(false);
+        expect(worker.isActiveWorker()).toBe(false);
 
         worker.removeAllListeners();
     });
@@ -129,8 +129,8 @@ describe('breadocast single worker', () => {
         await sleep(10);
 
         expect(startCallback).toBeCalledTimes(1);
-        expect(worker1.isMainWorker()).toBe(false);
-        expect(worker2.isMainWorker()).toBe(true);
+        expect(worker1.isActiveWorker()).toBe(false);
+        expect(worker2.isActiveWorker()).toBe(true);
 
         worker2.removeAllListeners();
         worker2.disconnect();

@@ -4,12 +4,12 @@
 
 Install with npm:
 
-`npm install broadcast-single-worker`
+`npm install @sysix/broadcast-single-worker`
 
 Use it in your code:
 
 ```typescript
-import BreadcastSingleWorker from 'broeadcast-single-worker';
+import BreadcastSingleWorker from '@sysix/broeadcast-single-worker';
 
 const worker = new BreadcastSingleWorker('channel_name');
 

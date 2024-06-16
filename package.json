@@ -1,15 +1,15 @@
 {
-  "name": "broadcast-single-worker",
+  "name": "@sysix/broadcast-single-worker",
   "version": "1.0.0",
   "description": "Create a single worker for multiple browser tabs",
-  "main": "dist/BroadcastSingleWorker.js",
-  "browser": "dist/BroadcastSingleWorker.js",
-  "types": "types/BroadcastSingleWorker.d.ts",
+  "main": "dist/index.js",
+  "browser": "dist/index.js",
+  "types": "types/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./types/BroadcastSingleWorker.d.ts",
-      "default": "./dist/BroadcastSingleWorker.js"
+      "types": "./types/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "sideEffects": false,
