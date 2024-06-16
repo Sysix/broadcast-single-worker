@@ -4,6 +4,7 @@
   "module": "dist/index.js",
   "browser": "dist/index.js",
   "types": "types/index.d.ts",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/Sysix/broadcast-single-worker.git"
