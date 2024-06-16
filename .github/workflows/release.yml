@@ -1,0 +1,37 @@
+name: Release to npmjs
+on:
+  release:
+    types: [created]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: install npm globally
+        run: npm install -g npm
+
+      - name: install package 
+        run: npm ci
+
+      - name: bump version
+        run: |
+            npm version ${{ github.ref_name }}
+            git config --global user.name '${{ github.repository_owner }}'
+            git config --global user.email '${{ github.repository_owner }}@users.noreply.github.com'
+            git commit -am "bump version to ${{ github.ref_name }}"
+
+      - name: release
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
