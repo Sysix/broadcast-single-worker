@@ -26,6 +26,7 @@ jobs:
 
       - name: bump version
         run: |
+            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
             git config --global user.name '${{ github.repository_owner }}'
             git config --global user.email '${{ github.repository_owner }}@users.noreply.github.com'
             npm version ${{ github.ref_name }} --git-tag-version=false
