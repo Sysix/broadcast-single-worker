@@ -26,10 +26,14 @@ jobs:
 
       - name: bump version
         run: |
-            npm version ${{ github.ref_name }}
             git config --global user.name '${{ github.repository_owner }}'
             git config --global user.email '${{ github.repository_owner }}@users.noreply.github.com'
+            npm version ${{ github.ref_name }}
+    
+      - name: push to main
+        run: |
             git commit -am "bump version to ${{ github.ref_name }}"
+            git push
 
       - name: release
         run: npm publish --provenance --access public
