@@ -11,7 +11,7 @@ export default class BroadcastSingleWorker extends EventEmitter<'start-worker' |
 
     #otherWorkerIds: string[] = [];
 
-    #beforeUnloadCallback = this.disconnect.bind(this);
+    #unloadCallback = this.disconnect.bind(this);
 
     constructor(channelName: string) {
         super();
@@ -40,8 +40,8 @@ export default class BroadcastSingleWorker extends EventEmitter<'start-worker' |
         // tell the current tab to start their job
         this.emit('start-worker');
 
-        // listen for onbeforeunload event
-        window.addEventListener('onbeforeunload', this.#beforeUnloadCallback);
+        // listen for unload event
+        window.addEventListener('unload', this.#unloadCallback);
     }
     /**
      * disconnect to the broadcast channel and tell other tabs
@@ -67,8 +67,8 @@ export default class BroadcastSingleWorker extends EventEmitter<'start-worker' |
         this.#channel.close();
         this.#channel = undefined;
 
-        // don't listen to the onbeforeunload event
-        window.removeEventListener('onbeforeunload', this.#beforeUnloadCallback);
+        // don't listen to the unload event
+        window.removeEventListener('unload', this.#unloadCallback);
     }
 
     /**

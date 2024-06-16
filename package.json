@@ -1,15 +1,15 @@
 {
   "name": "@sysix/broadcast-single-worker",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Create a single worker for multiple browser tabs",
-  "main": "dist/index.js",
+  "module": "dist/index.js",
   "browser": "dist/index.js",
   "types": "types/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": "./types/index.d.ts",
-      "default": "./dist/index.js"
+      "import": "./dist/index.js"
     }
   },
   "sideEffects": false,
@@ -21,7 +21,6 @@
     "build": "tsc --project ./tsconfig.json",
     "test": "jest ./src --config=jest.config.js"
   },
-  "author": "",
   "license": "MIT",
   "dependencies": {
     "eventemitter3": "^5.0.1"

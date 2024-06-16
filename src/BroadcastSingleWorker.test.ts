@@ -90,31 +90,25 @@ describe('breadocast single worker', () => {
         worker1.disconnect();
     });
 
-    // ToDo: somehow the event listener is not triggered
-    test.skip('disconnect channel when window is closing', async () => {
+    test('disconnect channel when window is closing', async () => {
+        const spy = jest.spyOn(BroadcastSingleWorker.prototype, 'disconnect');
         const worker = new BroadcastSingleWorker('worker');
-
-        const disconnectMock = jest.fn();
-        const originalDisconnect = worker.disconnect;
-
-        worker.disconnect = () => {
-            originalDisconnect();
-            disconnectMock();
-        };
 
         worker.connect();
 
-        window.dispatchEvent(new Event('beforeunload'));
+        window.dispatchEvent(new Event('unload'));
 
         // ToDo: Maybe Mock BroadcastChannel, so we dont need to wait
-        await sleep(100);
+        await sleep(10);
 
-        expect(disconnectMock).toBeCalledTimes(1);
+        expect(spy).toBeCalledTimes(1);
         expect(worker.isActiveWorker()).toBe(false);
 
         worker.removeAllListeners();
-    });
 
+        spy.mockRestore();
+    });
+    
     test('don\'t fire start-worker event when non main worker disconnect', async () => {
         const worker1 = new BroadcastSingleWorker('worker');
         const worker2 = new BroadcastSingleWorker('worker');

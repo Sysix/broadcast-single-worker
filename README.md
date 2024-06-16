@@ -23,7 +23,7 @@ worker.addListener('stop-worker', () => {
 
 // connect to worker to the channel, other browser tab will be notified
 // this will trigger start-worker event for the current tab
-// this will tigger stop-worker event for the other tab with has the main worker
+// this will trigger stop-worker event for the other tab with has the main worker
 worker.connect();
 
 // when you no longer want to listen for other tabs
@@ -40,11 +40,15 @@ When multiple tabs are connected to the server, then every tab starts a request 
 This library makes it possible to reduce server requests with this following example:
 
 ```typescript 
-import BreadcastSingleWorker from 'broeadcast-single-worker';
+import BroadcastSingleWorker from '@sysix/broadcast-single-worker';
 
-const worker = new BreadcastSingleWorker('channel_name');
-const UIChannel = new BreadcastChannel('channel_name_ui');
+const worker = new BroadcastSingleWorker('channel_name');
+const UIChannel = new BroadcastChannel('channel_name_ui');
 let intervalId: number | undefined;
+
+const updateUi = (json: unknown) => {
+  document.body.innerText = JSON.stringify(json);
+}
 
 worker.addListener('start-worker', () => {
     intervalId = window.setInterval(async () => {
@@ -62,8 +66,8 @@ worker.addListener('stop-worker', () => {
     }
 });
 
-UIChannel.onmessage = (json: unkown) => {
-    updateUi(json);
+UIChannel.onmessage = (message: MessageEvent<unknown>) => {
+    updateUi(message.data);
 }
 
 worker.connect();
