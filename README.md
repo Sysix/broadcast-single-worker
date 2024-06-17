@@ -1,8 +1,8 @@
 # broadcast-single-worker
 
-![test](https://github.com/Sysix/broadcast-single-worker/actions/workflows/test.yml/badge.svg)(https://github.com/Sysix/broadcast-single-worker/actions/workflows/test.yml)
-![NPM Version](https://img.shields.io/npm/v/%40sysix%2Fbroadcast-single-worker)
-![NPM License](https://img.shields.io/npm/l/!%5BNPM%20Version%5D(https%3A%2F%2Fimg.shields.io%2Fnpm%2Fv%2F%2540sysix%252Fbroadcast-single-worker))
+![test](https://github.com/Sysix/broadcast-single-worker/actions/workflows/test.yml/badge.svg)
+[![NPM Version](https://img.shields.io/npm/v/%40sysix%2Fbroadcast-single-worker)](https://www.npmjs.com/package/@sysix/broadcast-single-worker)
+[![NPM License](https://img.shields.io/npm/l/%40sysix%2Fbroadcast-single-worker)](https://www.npmjs.com/package/@sysix/broadcast-single-worker)
 
 ## Setup
 
