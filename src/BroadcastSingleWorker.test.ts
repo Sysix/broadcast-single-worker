@@ -17,7 +17,7 @@ Object.defineProperty(window, 'BroadcastChannel', {
     }
 })
 
-describe('breadocast single worker', () => {
+describe('broadocast single worker', () => {
     test('fire start-worker event when connecting', () => {
         const worker = new BroadcastSingleWorker('worker');
         const startCallback = jest.fn();
